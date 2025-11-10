@@ -1,15 +1,43 @@
+using Microsoft.EntityFrameworkCore;
+using UIABank.API.Services;
+using UIABank.BW.CU;
+using UIABank.BW.Interfaces.BW;
+using UIABank.BW.Interfaces.DA;
+using UIABank.DA.Acciones;
+using UIABank.DA.Config;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
+
+builder.Services.AddDbContext<TransferenciaContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddTransient<ITransferenciaBW, TransferenciaBW>();
+builder.Services.AddTransient<ITransferenciaDA, TransferenciaDA>();
+builder.Services.AddTransient<ICuentaDA, CuentaDA>();
+
+builder.Services.AddTransient<ITransferenciaProgramadaDA, TransferenciaProgramadaDA>();
+builder.Services.AddTransient<ITransferenciaProgramadaBW, TransferenciaProgramadaBW>();
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseCors("AllowAllOrigins");
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -17,9 +45,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
