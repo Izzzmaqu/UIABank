@@ -1,0 +1,6 @@
+@UIABank.API_HostAddress = http://localhost:5230
+
+GET {{UIABank.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
