@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="CU\" />
     <Folder Include="Interfaces\BW\" />
     <Folder Include="Interfaces\DA\" />
   </ItemGroup>
