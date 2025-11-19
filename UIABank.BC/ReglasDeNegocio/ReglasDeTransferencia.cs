@@ -26,6 +26,7 @@ namespace UIABank.BC.ReglasDeNegocio
         }
 
         // Valida que la cuenta de origen esté activa
+        // Valida que la cuenta de origen esté activa.
         public static bool ValidarEstadoCuenta(string estado)
         {
             return estado.Equals("Activa", StringComparison.OrdinalIgnoreCase);

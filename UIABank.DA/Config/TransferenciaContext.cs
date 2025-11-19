@@ -11,7 +11,7 @@ namespace UIABank.DA.Config
 
     
         public DbSet<Transferencia> Transferencias { get; set; }
-        public DbSet<CuentaFake> Cuenta { get; set; }
+        public DbSet<Cuenta> Cuenta { get; set; }
 
         public DbSet<ProgramacionTransferencia> Programaciones { get; set; }
 
