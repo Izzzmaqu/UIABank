@@ -1,4 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using UIABank.BC.Beneficiarios;
+using UIABank.BC.Cuentas;
+using UIABank.BC.Modelos;
+using UIABank.DA.Configurations;
 using UIABank.BC.Modelos;
 
 namespace UIABank.DA.Config
@@ -12,6 +16,8 @@ namespace UIABank.DA.Config
 
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Cliente> Clientes { get; set; }
+        public DbSet<Cuenta> Cuentas { get; set; }
+        public DbSet<Beneficiario> Beneficiarios { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -40,6 +46,9 @@ namespace UIABank.DA.Config
                 entity.Property(e => e.Telefono).IsRequired().HasMaxLength(20);
                 entity.Property(e => e.Correo).IsRequired().HasMaxLength(200);
             });
+
+            modelBuilder.ApplyConfiguration(new CuentaConfiguration());
+            modelBuilder.ApplyConfiguration(new BeneficiarioConfiguration());
         }
     }
 }
