@@ -3,6 +3,7 @@ using UIABank.BC.Beneficiarios;
 using UIABank.BC.Cuentas;
 using UIABank.BC.Modelos;
 using UIABank.DA.Configurations;
+using UIABank.BC.Modelos;
 
 namespace UIABank.DA.Config
 {

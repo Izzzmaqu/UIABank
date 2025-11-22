@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UIABank.DA.Config;
 
@@ -11,9 +12,11 @@ using UIABank.DA.Config;
 namespace UIABank.DA.Migrations
 {
     [DbContext(typeof(UIABankDbContext))]
-    partial class UIABankDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251116034351_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,89 +24,6 @@ namespace UIABank.DA.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            // ==== NUEVAS ENTIDADES DEL MÓDULO CUENTAS ====
-
-            modelBuilder.Entity("UIABank.BC.Beneficiarios.Beneficiario", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Alias")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("Banco")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<Guid>("ClienteId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Estado")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Moneda")
-                        .HasColumnType("int");
-
-                    b.Property<string>("NumeroCuenta")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(20)");
-
-                    b.Property<string>("Pais")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClienteId", "Alias")
-                        .IsUnique();
-
-                    b.ToTable("Beneficiarios", (string)null);
-                });
-
-            modelBuilder.Entity("UIABank.BC.Cuentas.Cuenta", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ClienteId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Estado")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Moneda")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Numero")
-                        .IsRequired()
-                        .HasMaxLength(12)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(12)");
-
-                    b.Property<decimal>("Saldo")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("Tipo")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Numero")
-                        .IsUnique();
-
-                    b.ToTable("Cuentas", (string)null);
-                });
-
-            // ==== ENTIDADES ORIGINALES (CLIENTE / USUARIO) ====
 
             modelBuilder.Entity("UIABank.BC.Modelos.Cliente", b =>
                 {
@@ -208,7 +128,6 @@ namespace UIABank.DA.Migrations
                     b.Navigation("Usuario")
                         .IsRequired();
                 });
-
 #pragma warning restore 612, 618
         }
     }
