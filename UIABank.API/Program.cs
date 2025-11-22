@@ -1,6 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using UIABank.API.Services;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using UIABank.BW.CU;
 using UIABank.BW.Interfaces.BW;
@@ -9,6 +10,27 @@ using UIABank.DA.Acciones;
 using UIABank.DA.Config;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
+
+builder.Services.AddDbContext<TransferenciaContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddTransient<ITransferenciaBW, TransferenciaBW>();
+builder.Services.AddTransient<ITransferenciaDA, TransferenciaDA>();
+builder.Services.AddTransient<ICuentaDA, CuentaDA>();
+
+builder.Services.AddTransient<ITransferenciaProgramadaDA, TransferenciaProgramadaDA>();
+builder.Services.AddTransient<ITransferenciaProgramadaBW, TransferenciaProgramadaBW>();
 
 builder.Services.AddDbContext<UIABankDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -47,6 +69,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.UseCors("AllowAllOrigins");
 
 if (app.Environment.IsDevelopment())
 {
