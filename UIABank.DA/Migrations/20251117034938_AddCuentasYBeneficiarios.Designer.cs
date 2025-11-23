@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UIABank.DA.Config;
 
@@ -11,9 +12,11 @@ using UIABank.DA.Config;
 namespace UIABank.DA.Migrations
 {
     [DbContext(typeof(UIABankDbContext))]
-    partial class UIABankDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251117034938_AddCuentasYBeneficiarios")]
+    partial class AddCuentasYBeneficiarios
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,8 +24,6 @@ namespace UIABank.DA.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            // ==== NUEVAS ENTIDADES DEL MÓDULO CUENTAS ====
 
             modelBuilder.Entity("UIABank.BC.Beneficiarios.Beneficiario", b =>
                 {
@@ -102,8 +103,6 @@ namespace UIABank.DA.Migrations
 
                     b.ToTable("Cuentas", (string)null);
                 });
-
-            // ==== ENTIDADES ORIGINALES (CLIENTE / USUARIO) ====
 
             modelBuilder.Entity("UIABank.BC.Modelos.Cliente", b =>
                 {
@@ -208,7 +207,6 @@ namespace UIABank.DA.Migrations
                     b.Navigation("Usuario")
                         .IsRequired();
                 });
-
 #pragma warning restore 612, 618
         }
     }
