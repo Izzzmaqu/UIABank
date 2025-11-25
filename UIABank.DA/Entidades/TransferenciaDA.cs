@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using UIABank.BC.Cuentas;
 
 namespace UIABank.DA.Entidades
 {
@@ -48,7 +49,7 @@ namespace UIABank.DA.Entidades
 
        
   
-        public virtual CuentaEntidad? CuentaOrigen { get; set; }
-        public virtual CuentaEntidad? CuentaDestino { get; set; }
+        public virtual Cuenta? CuentaOrigen { get; set; }
+        public virtual Cuenta? CuentaDestino { get; set; }
     }
 }

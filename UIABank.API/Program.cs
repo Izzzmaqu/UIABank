@@ -8,6 +8,8 @@ using UIABank.BW.Interfaces.BW;
 using UIABank.BW.Interfaces.DA;
 using UIABank.DA.Acciones;
 using UIABank.DA.Config;
+using UIABank.BC.Cuentas;
+using UIABank.DA.Repositorios;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,12 +27,15 @@ builder.Services.AddCors(options =>
 builder.Services.AddDbContext<TransferenciaContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddTransient<ITransferenciaBW, TransferenciaBW>();
-builder.Services.AddTransient<ITransferenciaDA, TransferenciaDA>();
-builder.Services.AddTransient<ICuentaDA, CuentaDA>();
 
-builder.Services.AddTransient<ITransferenciaProgramadaDA, TransferenciaProgramadaDA>();
-builder.Services.AddTransient<ITransferenciaProgramadaBW, TransferenciaProgramadaBW>();
+builder.Services.AddScoped<ICuentaRepository, CuentaRepository>();
+
+builder.Services.AddScoped<ITransferenciaDA, TransferenciaDA>();
+builder.Services.AddScoped<ITransferenciaBW, TransferenciaBW>();
+
+
+builder.Services.AddScoped<ITransferenciaProgramadaDA, TransferenciaProgramadaDA>();
+builder.Services.AddScoped<ITransferenciaProgramadaBW, TransferenciaProgramadaBW>();
 
 builder.Services.AddDbContext<UIABankDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
