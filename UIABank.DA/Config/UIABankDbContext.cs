@@ -17,7 +17,9 @@ namespace UIABank.DA.Config
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<Cuenta> Cuentas { get; set; }
         public DbSet<Beneficiario> Beneficiarios { get; set; }
+        public DbSet<PagoServicio> PagosServicios { get; set; }
 
+        public DbSet<ProveedorServicio> ProveedoresServicios { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
