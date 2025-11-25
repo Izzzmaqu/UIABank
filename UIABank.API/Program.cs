@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using UIABank.API.Services;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using UIABank.BW.CU;
 using UIABank.BW.Interfaces.BW;
@@ -43,9 +44,15 @@ builder.Services.AddDbContext<UIABankDbContext>(options =>
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
 
+builder.Services.AddScoped<IProveedorServicioRepository, ProveedorServicioRepository>();
+builder.Services.AddScoped<IPagoServicioRepository, PagoServicioRepository>();
+
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IClienteService, ClienteService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+
+builder.Services.AddScoped<IProveedorServicioService, ProveedorServicioService>();
+builder.Services.AddScoped<IPagoServicioService, PagoServicioService>();
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings["SecretKey"];
