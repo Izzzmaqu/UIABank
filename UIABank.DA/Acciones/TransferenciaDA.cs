@@ -3,7 +3,7 @@ using UIABank.BC.Modelos;
 using UIABank.BW.Interfaces.DA;
 using UIABank.DA.Config;
 
-
+using UIABank.BC.Cuentas;
 
 
 namespace UIABank.DA.Acciones
@@ -55,9 +55,9 @@ namespace UIABank.DA.Acciones
         //  RF-D2:
 
         public async Task<bool> EjecutarTransferenciaAsync(
-     Transferencia transferencia,
-     Cuenta cuentaOrigen,
-     Cuenta? cuentaDestino)
+            Transferencia transferencia,
+            Cuenta cuentaOrigen,
+            Cuenta? cuentaDestino)
         {
             using var transaccion = await _context.Database.BeginTransactionAsync();
             try

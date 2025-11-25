@@ -1,29 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using UIABank.BC.Cuentas;
 using UIABank.BC.Modelos;
 using UIABank.BC.ReglasDeNegocio;
 using UIABank.BW.Interfaces.BW;
 using UIABank.BW.Interfaces.DA;
-
-
-
+using UIABank.BC.ReglasDeNegocio;
 namespace UIABank.BW.CU
 {
     public class TransferenciaBW : ITransferenciaBW
     {
-        private readonly ITransferenciaDA transferenciaDA;
-        private readonly ICuentaDA cuentaDA;
+        private readonly ITransferenciaDA _transferenciaDA;
+        private readonly ICuentaRepository _cuentaRepository;
 
-
-        public TransferenciaBW(ITransferenciaDA transferenciaDA, ICuentaDA cuentaDA)
+        public TransferenciaBW(ITransferenciaDA transferenciaDA,
+                               ICuentaRepository cuentaRepository)
         {
-            this.transferenciaDA = transferenciaDA;
-            this.cuentaDA = cuentaDA;
+            _transferenciaDA = transferenciaDA;
+            _cuentaRepository = cuentaRepository;
         }
-
 
         // RF-D1: PRECHECK
         public async Task<bool> CrearAsync(Transferencia transferencia)
@@ -33,12 +29,12 @@ namespace UIABank.BW.CU
                 return false;
 
             // 2. Obtener cuenta origen 
-            var cuentaOrigen = await cuentaDA.ObtenerPorIdAsync(transferencia.CuentaOrigenId);
-            if (cuentaOrigen == null)
+            var cuentaOrigen = await _cuentaRepository.ObtenerPorIdAsync(transferencia.CuentaOrigenId);
+            if (cuentaOrigen is null)
                 return false;
 
             // 3. Estado activo
-            if (!ReglasTransferencia.ValidarEstadoCuenta(cuentaOrigen.Estado))
+            if (!ReglasTransferencia.ValidarEstadoCuenta(cuentaOrigen.Estado.ToString()))
                 return false;
 
             // 4. Saldo suficiente (saldo >= monto + comisión)
@@ -50,14 +46,14 @@ namespace UIABank.BW.CU
 
             // 5. Moneda igual
             if (!ReglasTransferencia.ValidarMoneda(
-                    cuentaOrigen.Moneda,
+                    cuentaOrigen.Moneda.ToString(),
                     transferencia.Moneda))
                 return false;
 
             // 6. Límite diario 
             const decimal LIMITE_DIARIO = 100000m;
 
-            var totalHoy = await transferenciaDA.ObtenerTotalDiarioAsync(
+            var totalHoy = await _transferenciaDA.ObtenerTotalDiarioAsync(
                 transferencia.UsuarioEjecutorId,
                 DateTime.Today,
                 transferencia.Moneda
@@ -66,43 +62,47 @@ namespace UIABank.BW.CU
             if (totalHoy + transferencia.Monto > LIMITE_DIARIO)
                 return false; // supera el límite diario permitido
 
-            // 7. Tercero confirmado 
+            // 7. Tercero confirmado (cuando implementen módulo C)
             if (transferencia.TerceroId.HasValue)
             {
-                
+                // TODO: validación de beneficiario / tercero
             }
 
             // 8. Si pasa todas las validaciones, se guarda la transferencia en BD
-            return await transferenciaDA.CrearAsync(transferencia);
+            return await _transferenciaDA.CrearAsync(transferencia);
         }
 
         // RF-D2: EJECUTAR TRANSFERENCIA REAL
-
         public async Task<bool> EjecutarAsync(Transferencia transferencia)
         {
             // 1. Obtener cuenta origen
-            var cuentaOrigen = await cuentaDA.ObtenerPorIdAsync(transferencia.CuentaOrigenId);
-            if (cuentaOrigen == null || cuentaOrigen.Estado != "Activa")
+            var cuentaOrigen = await _cuentaRepository.ObtenerPorIdAsync(transferencia.CuentaOrigenId);
+            if (cuentaOrigen is null)
+                return false;
+
+            if (!ReglasTransferencia.ValidarEstadoCuenta(cuentaOrigen.Estado.ToString()))
                 return false;
 
             // 2. Obtener cuenta destino si existe
             Cuenta? cuentaDestino = null;
-            if (transferencia.CuentaDestinoId != null)
+            if (transferencia.CuentaDestinoId.HasValue)
             {
-                cuentaDestino = await cuentaDA.ObtenerPorIdAsync(transferencia.CuentaDestinoId.Value);
+                cuentaDestino = await _cuentaRepository.ObtenerPorIdAsync(transferencia.CuentaDestinoId.Value);
+                if (cuentaDestino is null)
+                    return false;
             }
 
             // 3. Validaciones
             if (!ReglasTransferencia.ValidarSaldo(cuentaOrigen.Saldo, transferencia.Monto, transferencia.Comision))
                 return false;
 
-            if (!ReglasTransferencia.ValidarMoneda(cuentaOrigen.Moneda, transferencia.Moneda))
+            if (!ReglasTransferencia.ValidarMoneda(cuentaOrigen.Moneda.ToString(), transferencia.Moneda))
                 return false;
 
             // 4. Idempotencia
-            var trxExistente = await transferenciaDA.ObtenerPorIdempotencyKeyAsync(transferencia.IdempotencyKey);
-            if (trxExistente != null)
-                return true; 
+            var trxExistente = await _transferenciaDA.ObtenerPorIdempotencyKeyAsync(transferencia.IdempotencyKey);
+            if (trxExistente is not null)
+                return true; // ya se procesó
 
             // 5. Estado según monto
             transferencia.Estado =
@@ -111,7 +111,7 @@ namespace UIABank.BW.CU
                     : EstadoTransferencia.Exitosa;
 
             // 6. Delegar ejecución real a la DA
-            return await transferenciaDA.EjecutarTransferenciaAsync(
+            return await _transferenciaDA.EjecutarTransferenciaAsync(
                 transferencia,
                 cuentaOrigen,
                 cuentaDestino
@@ -119,12 +119,12 @@ namespace UIABank.BW.CU
         }
 
         public Task<bool> ActualizarEstadoAsync(int id, EstadoTransferencia nuevoEstado)
-            => transferenciaDA.ActualizarEstadoAsync(id, nuevoEstado);
+            => _transferenciaDA.ActualizarEstadoAsync(id, nuevoEstado);
 
         public Task<Transferencia?> ObtenerPorIdAsync(int id)
-            => transferenciaDA.ObtenerPorIdAsync(id);
+            => _transferenciaDA.ObtenerPorIdAsync(id);
 
         public Task<IEnumerable<Transferencia>> ListarPorUsuarioAsync(int usuarioId)
-            => transferenciaDA.ListarPorUsuarioAsync(usuarioId);
+            => _transferenciaDA.ListarPorUsuarioAsync(usuarioId);
     }
 }

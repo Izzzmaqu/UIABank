@@ -1,75 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
 using UIABank.BC.Modelos;
 using UIABank.BW.Interfaces.DA;
 using UIABank.DA.Config;
 
 namespace UIABank.DA.Acciones
 {
-    public class PagoServicioRepository : IPagoServicioRepository
+    public class ProveedorServicioRepository : IProveedorServicioRepository
     {
         private readonly UIABankDbContext _context;
 
-        public PagoServicioRepository(UIABankDbContext context)
+        public ProveedorServicioRepository(UIABankDbContext context)
         {
             _context = context;
         }
 
-        // === Implementación de IPagoServicioRepository ===
-
-        public async Task<PagoServicio> CrearAsync(PagoServicio pago)
+        public async Task<ProveedorServicio> CrearAsync(ProveedorServicio proveedor)
         {
-            _context.PagosServicios.Add(pago);
+            _context.ProveedoresServicios.Add(proveedor);
             await _context.SaveChangesAsync();
-            return pago;
+            return proveedor;
         }
 
-        public async Task<PagoServicio> ObtenerPorIdAsync(int id)
+        public async Task<ProveedorServicio> ObtenerPorIdAsync(int id)
         {
-            return await _context.PagosServicios
-                .Include(p => p.ProveedorServicio)
-                .Include(p => p.Cliente)
+            return await _context.ProveedoresServicios
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<List<PagoServicio>> ObtenerPorClienteAsync(
-            int clienteId,
-            DateTime? desde,
-            DateTime? hasta,
-            bool soloProgramados)
+        public async Task<List<ProveedorServicio>> ObtenerTodosAsync()
         {
-            var query = _context.PagosServicios
-                .Include(p => p.ProveedorServicio)
-                .Where(p => p.ClienteId == clienteId)
-                .AsQueryable();
-
-            if (desde.HasValue)
-                query = query.Where(p => p.FechaCreacion >= desde.Value);
-
-            if (hasta.HasValue)
-                query = query.Where(p => p.FechaCreacion <= hasta.Value);
-
-            if (soloProgramados)
-                query = query.Where(p => p.Estado == EstadoPagoServicio.Programado);
-
-            return await query
-                .OrderByDescending(p => p.FechaCreacion)
+            return await _context.ProveedoresServicios
+                .OrderBy(p => p.Nombre)
                 .ToListAsync();
         }
 
-        public async Task ActualizarAsync(PagoServicio pago)
+        public async Task ActualizarAsync(ProveedorServicio proveedor)
         {
-            _context.PagosServicios.Update(pago);
+            _context.ProveedoresServicios.Update(proveedor);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> ExisteNombreAsync(string nombre)
+        {
+            return await _context.ProveedoresServicios
+                .AnyAsync(p => p.Nombre == nombre);
         }
     }
 }
-

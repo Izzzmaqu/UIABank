@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UIABank.BC.Modelos;
+using UIABank.BC.Cuentas;
 
 namespace UIABank.BC.Modelos
 {
@@ -15,15 +16,15 @@ namespace UIABank.BC.Modelos
 
     
         // Referencia al Módulo B (Cuentas)
-        public int CuentaOrigenId { get; set; }
+        public Guid CuentaOrigenId { get; set; }
 
     
         // Referencia al Módulo B (Cuentas)
-        public int? CuentaDestinoId { get; set; }
+        public Guid? CuentaDestinoId { get; set; }
 
        
         // Referencia al Módulo C (Beneficiarios)
-        public int? TerceroId { get; set; }
+        public Guid? TerceroId { get; set; }
 
          
         public decimal Monto { get; set; }
