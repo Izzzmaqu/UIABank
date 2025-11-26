@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UIABank.BC.Cuentas
+namespace UIABank.BC.Modelos
 {
     public class Cuenta
     {

@@ -3,8 +3,6 @@ using UIABank.BC.Modelos;
 using UIABank.BW.Interfaces.DA;
 using UIABank.DA.Config;
 
-using UIABank.BC.Cuentas;
-
 
 namespace UIABank.DA.Acciones
 {

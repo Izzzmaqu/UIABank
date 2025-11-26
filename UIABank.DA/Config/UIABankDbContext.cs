@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using UIABank.BC.Beneficiarios;
-using UIABank.BC.Cuentas;
 using UIABank.BC.Modelos;
 using UIABank.DA.Configurations;
 
