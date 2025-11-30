@@ -1,5 +1,5 @@
 ﻿using System;
-using UIABank.BC.Cuentas;
+using UIABank.BC.Modelos;
 
 namespace UIABank.BW.Cuentas.DTOs
 {

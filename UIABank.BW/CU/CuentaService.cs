@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using UIABank.BC.Cuentas;
+using UIABank.BC.Modelos;
 using UIABank.BW.Cuentas.DTOs;
+using UIABank.BW.Interfaces.BW;
 
-namespace UIABank.BW.Cuentas.Servicios
+namespace UIABank.BW.CU
 {
-    public interface ICuentaService
-    {
-        Task<Cuenta> AbrirCuentaAsync(AbrirCuentaRequest request);
-        // Más métodos luego: Consultar, Bloquear, Cerrar...
-    }
+
 
     public class CuentaService : ICuentaService
     {

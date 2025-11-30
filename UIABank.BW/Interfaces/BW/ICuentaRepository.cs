@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UIABank.BC.Modelos;
 
 namespace UIABank.BC.Cuentas
 {

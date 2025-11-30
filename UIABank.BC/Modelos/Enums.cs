@@ -1,5 +1,4 @@
-﻿
-namespace UIABank.BC.Cuentas
+﻿namespace UIABank.BC.Modelos
 {
     public enum TipoCuenta
     {

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UIABank.BC.Modelos;
-using UIABank.BC.Cuentas;
 
 namespace UIABank.BW.Interfaces.DA
 {
