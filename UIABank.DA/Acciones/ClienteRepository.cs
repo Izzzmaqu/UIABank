@@ -14,11 +14,11 @@ namespace UIABank.DA.Acciones
             _context = context;
         }
 
-        public async Task<Cliente> ObtenerPorIdAsync(int id)
+        public async Task<List<Cliente>> ObtenerPorIdsAsync(List<int> idsClientes)
         {
             return await _context.Clientes
-                .Include(c => c.Usuario)
-                .FirstOrDefaultAsync(c => c.Id == id);
+                .Where(c => idsClientes.Contains(c.Id))
+                .ToListAsync();
         }
 
         public async Task<Cliente> ObtenerPorIdentificacionAsync(string identificacion)
@@ -50,6 +50,16 @@ namespace UIABank.DA.Acciones
             return await _context.Clientes
                 .Include(c => c.Usuario)
                 .ToListAsync();
+        }
+
+        public Task<Cliente?> ObtenerPorIdAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Cliente?> IClienteRepository.ActualizarAsync(Cliente cliente)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -27,5 +27,7 @@ namespace UIABank.BW.Interfaces.DA
 
         Task<decimal> ObtenerTotalDiarioAsync(int usuarioId, DateTime fecha, string moneda);
 
+        Task<List<Transferencia>> ListarPorRangoFechasAsync(DateTime desde, DateTime hasta);
+
     }
 }

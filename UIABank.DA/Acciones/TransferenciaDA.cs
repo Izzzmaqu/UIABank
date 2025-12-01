@@ -98,6 +98,13 @@ namespace UIABank.DA.Acciones
                 return false;
             }
         }
+        public Task<List<Transferencia>> ListarPorRangoFechasAsync(DateTime desde, DateTime hasta)
+        {
+            return _context.Transferencias
+                .Where(t => t.FechaCreacion >= desde &&
+                            t.FechaCreacion <= hasta)
+                .ToListAsync();
+        }
 
 
         async Task<decimal> ITransferenciaDA.ObtenerTotalDiarioAsync(int usuarioId, DateTime fecha, string moneda)
