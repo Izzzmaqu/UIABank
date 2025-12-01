@@ -32,8 +32,6 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Services.AddDbContext<TransferenciaContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
 builder.Services.AddScoped<ICuentaRepository, CuentaRepository>();

@@ -8,9 +8,9 @@ namespace UIABank.DA.Acciones
 {
     public class TransferenciaDA : ITransferenciaDA
     {
-        private readonly TransferenciaContext _context;
+        private readonly UIABankDbContext _context;
 
-        public TransferenciaDA(TransferenciaContext context)
+        public TransferenciaDA(UIABankDbContext context)
         {
             _context = context;
         }
