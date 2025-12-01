@@ -19,6 +19,8 @@ namespace UIABank.DA.Config
 
         public DbSet<ProveedorServicio> ProveedoresServicios { get; set; }
 
+        public DbSet<AuditLog> AuditLogs { get; set; } = null!;
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

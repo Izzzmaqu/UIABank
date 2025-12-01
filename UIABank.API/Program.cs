@@ -63,6 +63,12 @@ builder.Services.AddScoped<IPagoServicioService, PagoServicioService>();
 
 builder.Services.AddScoped<IHistorialService, HistorialService>();
 
+builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+
+builder.Services.AddScoped<IReportesService, ReportesService>();
+builder.Services.AddScoped<IAuditoriaService, AuditoriaService>();
+
+
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings["SecretKey"];
 

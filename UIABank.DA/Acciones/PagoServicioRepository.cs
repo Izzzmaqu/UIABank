@@ -70,6 +70,14 @@ namespace UIABank.DA.Acciones
             _context.PagosServicios.Update(pago);
             await _context.SaveChangesAsync();
         }
-    }
+
+        public Task<List<PagoServicio>> ListarPorRangoFechasAsync(DateTime desde, DateTime hasta)
+        {
+            return _context.PagosServicios
+                .Where(p => p.FechaEjecucion >= desde &&
+                            p.FechaEjecucion <= hasta)
+                .ToListAsync();
+        }
+}
 }
 

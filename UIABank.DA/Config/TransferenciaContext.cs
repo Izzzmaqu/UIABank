@@ -15,6 +15,8 @@ namespace UIABank.DA.Config
 
         public DbSet<ProgramacionTransferencia> Programaciones { get; set; }
 
+        public DbSet<AuditLog> AuditLogs { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -21,6 +21,7 @@ namespace UIABank.BW.Interfaces.DA
             bool soloProgramados);
 
         Task ActualizarAsync(PagoServicio pago);
+        Task<List<PagoServicio>> ListarPorRangoFechasAsync(DateTime desde, DateTime hasta);
     }
 }
 
