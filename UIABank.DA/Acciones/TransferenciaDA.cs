@@ -3,16 +3,14 @@ using UIABank.BC.Modelos;
 using UIABank.BW.Interfaces.DA;
 using UIABank.DA.Config;
 
-using UIABank.BC.Cuentas;
-
 
 namespace UIABank.DA.Acciones
 {
     public class TransferenciaDA : ITransferenciaDA
     {
-        private readonly TransferenciaContext _context;
+        private readonly UIABankDbContext _context;
 
-        public TransferenciaDA(TransferenciaContext context)
+        public TransferenciaDA(UIABankDbContext context)
         {
             _context = context;
         }
@@ -99,6 +97,13 @@ namespace UIABank.DA.Acciones
                 
                 return false;
             }
+        }
+        public Task<List<Transferencia>> ListarPorRangoFechasAsync(DateTime desde, DateTime hasta)
+        {
+            return _context.Transferencias
+                .Where(t => t.FechaCreacion >= desde &&
+                            t.FechaCreacion <= hasta)
+                .ToListAsync();
         }
 
 

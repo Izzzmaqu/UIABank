@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UIABank.BC.Beneficiarios;
+using UIABank.BC.Modelos;
 using UIABank.BW.Interfaces.BW;
 
 namespace UIABank.BW.CU

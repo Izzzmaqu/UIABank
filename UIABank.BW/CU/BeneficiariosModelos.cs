@@ -1,6 +1,5 @@
 ﻿using System;
-using UIABank.BC.Beneficiarios;
-using UIABank.BC.Cuentas;
+using UIABank.BC.Modelos;
 
 namespace UIABank.BW.CU
 {

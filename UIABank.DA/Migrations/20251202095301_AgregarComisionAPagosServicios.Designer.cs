@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UIABank.DA.Config;
 
@@ -11,9 +12,11 @@ using UIABank.DA.Config;
 namespace UIABank.DA.Migrations
 {
     [DbContext(typeof(UIABankDbContext))]
-    partial class UIABankDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251202095301_AgregarComisionAPagosServicios")]
+    partial class AgregarComisionAPagosServicios
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

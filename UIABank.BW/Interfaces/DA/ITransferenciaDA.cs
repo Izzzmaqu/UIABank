@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UIABank.BC.Modelos;
-using UIABank.BC.Cuentas;
 
 namespace UIABank.BW.Interfaces.DA
 {
@@ -27,6 +26,8 @@ namespace UIABank.BW.Interfaces.DA
         Task<bool> EjecutarTransferenciaAsync(Transferencia transferencia, Cuenta cuentaOrigen, Cuenta? cuentaDestino);
 
         Task<decimal> ObtenerTotalDiarioAsync(int usuarioId, DateTime fecha, string moneda);
+
+        Task<List<Transferencia>> ListarPorRangoFechasAsync(DateTime desde, DateTime hasta);
 
     }
 }

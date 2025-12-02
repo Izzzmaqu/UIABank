@@ -37,6 +37,7 @@ namespace UIABank.BC.Modelos
         public DateTime? FechaEjecucion { get; set; }
 
         public EstadoPagoServicio Estado { get; set; }
+        public decimal Comision { get; set; }
     }
 }
 
