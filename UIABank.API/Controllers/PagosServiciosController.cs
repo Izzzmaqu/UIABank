@@ -9,7 +9,7 @@ namespace UIABank.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Cliente")]
+    [Authorize(Roles = "Administrador,Cliente,Gestor")]
     public class PagosServiciosController : ControllerBase
     {
         private readonly IPagoServicioService _service;
@@ -28,14 +28,28 @@ namespace UIABank.API.Controllers
             return int.Parse(claim.Value);
         }
 
-        // RF-E2 y RF-E3: pago inmediato o programado, depende de FechaProgramada
         [HttpPost]
         public async Task<IActionResult> CrearPago([FromBody] CrearPagoServicioDto dto)
         {
             try
             {
-                var clienteId = ObtenerClienteIdDesdeClaims();
-                dto.ClienteId = clienteId;
+                var rol = User.FindFirst(ClaimTypes.Role)?.Value;
+
+                if (rol == "Cliente")
+                {
+                    dto.ClienteId = ObtenerClienteIdDesdeClaims();
+                }
+                else if (rol == "Administrador" || rol == "Gestor")
+                {
+                    if (dto.ClienteId == 0)
+                    {
+                        dto.ClienteId = 1;
+                    }
+                }
+                else
+                {
+                    return Unauthorized(new { error = "Rol no autorizado para realizar pagos" });
+                }
 
                 var resultado = await _service.CrearPagoAsync(dto);
                 return Ok(resultado);
@@ -50,7 +64,6 @@ namespace UIABank.API.Controllers
             }
         }
 
-        // RF-E3: cancelar pagos programados hasta 24h antes
         [HttpDelete("{id}/cancelar")]
         public async Task<IActionResult> CancelarPagoProgramado(int id)
         {
@@ -70,16 +83,66 @@ namespace UIABank.API.Controllers
             }
         }
 
-        // Para ver el historial de pagos de servicios del cliente (ayuda también a Módulo F)
         [HttpGet]
         public async Task<IActionResult> ObtenerPagos(
+            [FromQuery] int? clienteId,
             [FromQuery] DateTime? desde,
             [FromQuery] DateTime? hasta,
             [FromQuery] bool soloProgramados = false)
         {
-            var clienteId = ObtenerClienteIdDesdeClaims();
-            var pagos = await _service.ObtenerPagosClienteAsync(clienteId, desde, hasta, soloProgramados);
-            return Ok(pagos);
+            try
+            {
+                var rol = User.FindFirst(ClaimTypes.Role)?.Value;
+
+                int clienteIdFinal;
+
+                if (rol == "Administrador" || rol == "Gestor")
+                {
+                    if (clienteId.HasValue)
+                    {
+                        clienteIdFinal = clienteId.Value;
+                    }
+                    else
+                    {
+                        var todosPagos = await _service.ObtenerTodosPagosAsync(desde, hasta, soloProgramados);
+                        return Ok(todosPagos);
+                    }
+                }
+                else
+                {
+                    clienteIdFinal = ObtenerClienteIdDesdeClaims();
+                }
+
+                var pagos = await _service.ObtenerPagosClienteAsync(clienteIdFinal, desde, hasta, soloProgramados);
+                return Ok(pagos);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Unauthorized(new { error = ex.Message });
+            }
+        }
+
+        [HttpGet("{id}/comprobante")]
+        public async Task<IActionResult> DescargarComprobante(int id)
+        {
+            try
+            {
+                var pdfBytes = await _service.GenerarComprobantePdfAsync(id);
+
+                return File(
+                    fileContents: pdfBytes,
+                    contentType: "application/pdf",
+                    fileDownloadName: $"Comprobante_Pago_{id}.pdf"
+                );
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(new { error = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { error = "Error al generar comprobante" });
+            }
         }
     }
 }

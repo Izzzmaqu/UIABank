@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using UIABank.BC.Cuentas;
+using UIABank.BC.Modelos;
 
 namespace UIABank.DA.Configurations
 {

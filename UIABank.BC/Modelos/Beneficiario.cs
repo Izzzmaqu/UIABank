@@ -1,7 +1,6 @@
 ﻿using System;
-using UIABank.BC.Cuentas; // Para usar el enum Moneda
 
-namespace UIABank.BC.Beneficiarios
+namespace UIABank.BC.Modelos
 {
     public class Beneficiario
     {

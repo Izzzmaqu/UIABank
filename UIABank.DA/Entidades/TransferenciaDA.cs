@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using UIABank.BC.Cuentas;
+using UIABank.BC.Modelos;
 
 namespace UIABank.DA.Entidades
 {

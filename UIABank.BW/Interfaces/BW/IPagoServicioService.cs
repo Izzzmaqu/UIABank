@@ -13,7 +13,7 @@ namespace UIABank.BW.Interfaces.BW
         public decimal Monto { get; set; }
         public string Moneda { get; set; }
         public string CuentaOrigen { get; set; }
-        public DateTime? FechaProgramada { get; set; } // null => inmediato
+        public DateTime? FechaProgramada { get; set; }
     }
 
     public class PagoServicioResultadoDto
@@ -26,12 +26,20 @@ namespace UIABank.BW.Interfaces.BW
     public interface IPagoServicioService
     {
         Task<PagoServicioResultadoDto> CrearPagoAsync(CrearPagoServicioDto dto);
+
         Task<List<PagoServicio>> ObtenerPagosClienteAsync(
             int clienteId,
             DateTime? desde,
             DateTime? hasta,
             bool soloProgramados);
 
+        Task<List<PagoServicio>> ObtenerTodosPagosAsync(
+            DateTime? desde,
+            DateTime? hasta,
+            bool soloProgramados);
+
         Task CancelarPagoProgramadoAsync(int pagoServicioId, int clienteId);
+
+        Task<byte[]> GenerarComprobantePdfAsync(int pagoServicioId);
     }
 }

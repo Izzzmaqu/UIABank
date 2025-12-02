@@ -1,5 +1,4 @@
-﻿
-namespace UIABank.BC.Beneficiarios
+﻿namespace UIABank.BC.Modelos
 {
     public enum EstadoBeneficiario
     {

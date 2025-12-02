@@ -11,9 +11,15 @@ using UIABank.DA.Acciones;
 using UIABank.DA.Config;
 using UIABank.BC.Cuentas;
 using UIABank.DA.Repositorios;
-using UIABank.DA.Acciones; 
+using UIABank.DA.Acciones;
+using UIABank.BW.CU;
+using UIABank.BW.Interfaces.BW;
+using QuestPDF.Infrastructure;
+using QuestPDF.Infrastructure;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 builder.Services.AddCors(options =>
 {
@@ -26,8 +32,6 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Services.AddDbContext<TransferenciaContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
 builder.Services.AddScoped<ICuentaRepository, CuentaRepository>();
@@ -55,6 +59,17 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IProveedorServicioService, ProveedorServicioService>();
 builder.Services.AddScoped<IPagoServicioService, PagoServicioService>();
 
+builder.Services.AddScoped<IHistorialService, HistorialService>();
+
+builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+
+builder.Services.AddScoped<IReportesService, ReportesService>();
+builder.Services.AddScoped<IAuditoriaService, AuditoriaService>();
+
+builder.Services.AddScoped<ICuentaService, CuentaService>();
+
+
+
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings["SecretKey"];
 
@@ -77,9 +92,15 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+QuestPDF.Settings.License = LicenseType.Community;
 
 var app = builder.Build();
 

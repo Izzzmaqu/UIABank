@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 using UIABank.BC.Modelos;
 using UIABank.BW.Interfaces.BW;
 using UIABank.BW.Interfaces.DA;
@@ -26,18 +29,15 @@ namespace UIABank.BW.CU
 
         public async Task<PagoServicioResultadoDto> CrearPagoAsync(CrearPagoServicioDto dto)
         {
-            // 1. Validar cliente
             var cliente = await _clienteRepo.ObtenerPorIdAsync(dto.ClienteId)
                 ?? throw new ArgumentException("Cliente no encontrado");
 
-            // 2. Validar proveedor
             var proveedor = await _provRepo.ObtenerPorIdAsync(dto.ProveedorServicioId)
                 ?? throw new ArgumentException("Proveedor no encontrado");
 
             if (!proveedor.Activo)
                 throw new InvalidOperationException("El proveedor está inactivo");
 
-            // 3. Validar contrato según reglas del proveedor
             if (string.IsNullOrWhiteSpace(dto.NumeroContrato))
                 throw new ArgumentException("El número de contrato es obligatorio");
 
@@ -51,7 +51,6 @@ namespace UIABank.BW.CU
                 throw new ArgumentException(
                     $"El número de contrato debe tener entre {proveedor.MinLongitudContrato} y {proveedor.MaxLongitudContrato} dígitos");
 
-            // 4. Validar monto y moneda
             if (dto.Monto <= 0)
                 throw new ArgumentException("El monto debe ser mayor a 0");
 
@@ -62,19 +61,12 @@ namespace UIABank.BW.CU
             if (string.IsNullOrWhiteSpace(dto.CuentaOrigen))
                 throw new ArgumentException("La cuenta origen es obligatoria");
 
-            // TODO: aquí se debe validar saldo y límite diario
-            //   - consultar módulo de cuentas
-            //   - validar saldo suficiente
-            //   - validar que no se exceda el límite diario
-
-            // 5. Definir estado inicial
             var ahora = DateTime.UtcNow;
             EstadoPagoServicio estadoInicial;
             DateTime? fechaProg = null;
 
             if (dto.FechaProgramada.HasValue)
             {
-                // Pago programado
                 if (dto.FechaProgramada.Value <= ahora)
                     throw new ArgumentException("La fecha programada debe ser futura");
 
@@ -83,11 +75,9 @@ namespace UIABank.BW.CU
             }
             else
             {
-                // Pago inmediato (para simplificar: se marca como Exitoso directamente)
                 estadoInicial = EstadoPagoServicio.Exitoso;
             }
 
-            // 6. Generar número de referencia único
             var numeroReferencia = GenerarNumeroReferencia();
 
             var pago = new PagoServicio
@@ -123,6 +113,14 @@ namespace UIABank.BW.CU
             return _pagoRepo.ObtenerPorClienteAsync(clienteId, desde, hasta, soloProgramados);
         }
 
+        public Task<List<PagoServicio>> ObtenerTodosPagosAsync(
+            DateTime? desde,
+            DateTime? hasta,
+            bool soloProgramados)
+        {
+            return _pagoRepo.ObtenerTodosAsync(desde, hasta, soloProgramados);
+        }
+
         public async Task CancelarPagoProgramadoAsync(int pagoServicioId, int clienteId)
         {
             var pago = await _pagoRepo.ObtenerPorIdAsync(pagoServicioId)
@@ -147,9 +145,92 @@ namespace UIABank.BW.CU
             await _pagoRepo.ActualizarAsync(pago);
         }
 
+        public async Task<byte[]> GenerarComprobantePdfAsync(int pagoServicioId)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var pago = await _pagoRepo.ObtenerPorIdAsync(pagoServicioId)
+                ?? throw new ArgumentException("Pago no encontrado");
+
+            var proveedor = await _provRepo.ObtenerPorIdAsync(pago.ProveedorServicioId);
+
+            var pdfBytes = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(2, Unit.Centimetre);
+                    page.PageColor(Colors.White);
+
+                    page.Header()
+                        .Column(column =>
+                        {
+                            column.Item().AlignCenter().Text("COMPROBANTE DE PAGO")
+                                .FontSize(20).Bold();
+                            column.Item().AlignCenter().Text("UIABank - Sistema Bancario")
+                                .FontSize(12);
+                            column.Item().PaddingVertical(10);
+                        });
+
+                    page.Content()
+                        .PaddingVertical(20)
+                        .Column(column =>
+                        {
+                            column.Item().PaddingVertical(5).Row(row =>
+                            {
+                                row.RelativeItem().Text("Número de Referencia:").Bold();
+                                row.RelativeItem().Text(pago.NumeroReferencia ?? "N/A");
+                            });
+
+                            column.Item().PaddingVertical(5).Row(row =>
+                            {
+                                row.RelativeItem().Text("Fecha:").Bold();
+                                row.RelativeItem().Text(pago.FechaCreacion.ToString("dd/MM/yyyy HH:mm:ss"));
+                            });
+
+                            column.Item().PaddingVertical(5).Row(row =>
+                            {
+                                row.RelativeItem().Text("Proveedor:").Bold();
+                                row.RelativeItem().Text(proveedor?.Nombre ?? "N/A");
+                            });
+
+                            column.Item().PaddingVertical(5).Row(row =>
+                            {
+                                row.RelativeItem().Text("Número de Contrato:").Bold();
+                                row.RelativeItem().Text(pago.NumeroContrato);
+                            });
+
+                            column.Item().PaddingVertical(5).Row(row =>
+                            {
+                                row.RelativeItem().Text("Monto:").Bold();
+                                row.RelativeItem().Text($"{pago.Moneda} {pago.Monto:N2}");
+                            });
+
+                            column.Item().PaddingVertical(5).Row(row =>
+                            {
+                                row.RelativeItem().Text("Estado:").Bold();
+                                row.RelativeItem().Text(pago.Estado.ToString());
+                            });
+
+                            column.Item().PaddingVertical(5).Row(row =>
+                            {
+                                row.RelativeItem().Text("Cuenta Origen:").Bold();
+                                row.RelativeItem().Text(pago.CuentaOrigen);
+                            });
+                        });
+
+                    page.Footer()
+                        .AlignCenter()
+                        .Text($"Comprobante generado: {DateTime.Now:dd/MM/yyyy HH:mm:ss}\nGracias por su transacción")
+                        .FontSize(10);
+                });
+            }).GeneratePdf();
+
+            return pdfBytes;
+        }
+
         private string GenerarNumeroReferencia()
         {
-            // PS-YYYYMMDD-HHMMSS-XXXX
             var ahora = DateTime.UtcNow;
             var random = Guid.NewGuid().ToString("N").Substring(0, 4).ToUpperInvariant();
             return $"PS-{ahora:yyyyMMddHHmmss}-{random}";

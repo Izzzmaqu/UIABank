@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using UIABank.BC.Modelos;
-using UIABank.BC.Cuentas;
 
 namespace UIABank.DA.Config
 {
@@ -15,6 +14,8 @@ namespace UIABank.DA.Config
         public DbSet<Cuenta> Cuenta { get; set; }
 
         public DbSet<ProgramacionTransferencia> Programaciones { get; set; }
+
+        public DbSet<AuditLog> AuditLogs { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

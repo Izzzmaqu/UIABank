@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using UIABank.BC.Beneficiarios;
+﻿
+/*using UIABank.BC.Beneficiarios;
+using UIABank.BC.Modelos;
 using UIABank.DA.Config;
+
 
 namespace UIABank.DA.Repositorios
 {
@@ -73,3 +75,4 @@ namespace UIABank.DA.Repositorios
         }
     }
 }
+*/

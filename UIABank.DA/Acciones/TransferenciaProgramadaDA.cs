@@ -11,9 +11,9 @@ namespace UIABank.DA.Acciones
 {
     public class TransferenciaProgramadaDA : ITransferenciaProgramadaDA
     {
-        private readonly TransferenciaContext _context;
+        private readonly UIABankDbContext _context;
 
-        public TransferenciaProgramadaDA(TransferenciaContext context)
+        public TransferenciaProgramadaDA(UIABankDbContext context)
         {
             _context = context;
         }
@@ -21,7 +21,7 @@ namespace UIABank.DA.Acciones
 
         public async Task<bool> CrearAsync(ProgramacionTransferencia p)
         {
-            _context.Programaciones.Add(p);
+            _context.ProgramacionesTransferencias.Add(p);
             return await _context.SaveChangesAsync() > 0;
         }
 
@@ -39,14 +39,14 @@ namespace UIABank.DA.Acciones
                 Cancelada = false
             };
 
-            _context.Programaciones.Add(programacion);
+            _context.ProgramacionesTransferencias.Add(programacion);
             return await _context.SaveChangesAsync() > 0;
         }
 
         // Obtener programaciones pendientes para ejecutar
         public async Task<IEnumerable<ProgramacionTransferencia>> ObtenerPendientesAsync()
         {
-            return await _context.Programaciones
+            return await _context.ProgramacionesTransferencias
                 .Include(p => p.Transferencia)
                 .Where(p =>
                     !p.Ejecutada &&
@@ -58,7 +58,7 @@ namespace UIABank.DA.Acciones
         // Obtener una programación por Id (para cancelar, etc.)
         public async Task<ProgramacionTransferencia?> ObtenerPorIdAsync(int id)
         {
-            return await _context.Programaciones
+            return await _context.ProgramacionesTransferencias
                 .Include(p => p.Transferencia)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
@@ -66,14 +66,14 @@ namespace UIABank.DA.Acciones
         // Actualizar una programación completa
         public async Task<bool> ActualizarAsync(ProgramacionTransferencia programacion)
         {
-            _context.Programaciones.Update(programacion);
+            _context.ProgramacionesTransferencias.Update(programacion);
             return await _context.SaveChangesAsync() > 0;
         }
 
 
         public async Task<bool> MarcarEjecutada(int id)
         {
-            var p = await _context.Programaciones.FindAsync(id);
+            var p = await _context.ProgramacionesTransferencias.FindAsync(id);
             if (p == null)
                 return false;
 
@@ -84,7 +84,7 @@ namespace UIABank.DA.Acciones
 
         public async Task<bool> Cancelar(int id)
         {
-            var p = await _context.Programaciones.FindAsync(id);
+            var p = await _context.ProgramacionesTransferencias.FindAsync(id);
             if (p == null)
                 return false;
 
