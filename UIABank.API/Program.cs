@@ -66,6 +66,9 @@ builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
 builder.Services.AddScoped<IReportesService, ReportesService>();
 builder.Services.AddScoped<IAuditoriaService, AuditoriaService>();
 
+builder.Services.AddScoped<ICuentaService, CuentaService>();
+
+
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings["SecretKey"];
@@ -89,7 +92,11 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

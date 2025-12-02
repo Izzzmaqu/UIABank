@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UIABank.BC.Cuentas;
 using UIABank.BC.Modelos;
+using UIABank.BW.CU;
 using UIABank.BW.Interfaces.BW;
 
 namespace UIABank.BW.CU
@@ -90,7 +91,7 @@ namespace UIABank.BW.CU
             var cuenta = await _cuentaRepository.ObtenerPorIdAsync(cuentaId)
                          ?? throw new InvalidOperationException("La cuenta no existe.");
 
-            cuenta.Cerrar(); // La propia entidad valida que el saldo sea 0
+            cuenta.Cerrar();
             await _cuentaRepository.GuardarCambiosAsync();
         }
 

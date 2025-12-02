@@ -39,6 +39,7 @@ namespace UIABank.DA.Acciones
             return cliente;
         }
 
+        // ✅ MÉTODO CORREGIDO 1
         public async Task ActualizarAsync(Cliente cliente)
         {
             _context.Clientes.Update(cliente);
@@ -52,15 +53,20 @@ namespace UIABank.DA.Acciones
                 .ToListAsync();
         }
 
-        public Task<Cliente?> ObtenerPorIdAsync(int id)
+        // ✅ MÉTODO IMPLEMENTADO 1
+        public async Task<Cliente?> ObtenerPorIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Clientes
+                .Include(c => c.Usuario) // Incluye el usuario asociado si existe
+                .FirstOrDefaultAsync(c => c.Id == id);
         }
 
+        // ✅ MÉTODO IMPLEMENTADO 2
         Task<Cliente?> IClienteRepository.ActualizarAsync(Cliente cliente)
         {
-            throw new NotImplementedException();
+            _context.Clientes.Update(cliente);
+            _context.SaveChanges(); // Síncrono porque la interfaz lo requiere así
+            return Task.FromResult<Cliente?>(cliente);
         }
     }
 }
-

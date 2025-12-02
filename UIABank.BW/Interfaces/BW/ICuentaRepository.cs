@@ -12,12 +12,7 @@ namespace UIABank.BC.Cuentas
         Task AgregarAsync(Cuenta cuenta);
         Task<Cuenta?> ObtenerPorIdAsync(Guid id);
         Task<List<Cuenta>> ObtenerPorClienteAsync(Guid clienteId);
-        Task<List<Cuenta>> BuscarAsync(
-            Guid? clienteId,
-            TipoCuenta? tipo,
-            Moneda? moneda,
-            EstadoCuenta? estado);
-
+        Task<List<Cuenta>> BuscarAsync(Guid? clienteId, TipoCuenta? tipo, Moneda? moneda, EstadoCuenta? estado);
         Task GuardarCambiosAsync();
     }
 }

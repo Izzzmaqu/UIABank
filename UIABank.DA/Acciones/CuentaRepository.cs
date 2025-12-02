@@ -3,7 +3,6 @@ using UIABank.BC.Cuentas;
 using UIABank.BC.Modelos;
 using UIABank.DA.Config;
 
-
 namespace UIABank.DA.Repositorios
 {
     public class CuentaRepository : ICuentaRepository

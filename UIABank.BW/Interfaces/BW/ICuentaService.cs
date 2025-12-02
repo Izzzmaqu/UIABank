@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-
-
 namespace UIABank.BW.Interfaces.BW
 {
     using UIABank.BW.CU;

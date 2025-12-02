@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UIABank.BW.CU;
-using UIABank.BW.Cuentas;
 using UIABank.BW.Interfaces.BW;
 using UIABank.BC.Modelos;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace UIABank.API.Controllers
 {
@@ -19,7 +21,6 @@ namespace UIABank.API.Controllers
         }
 
         // POST: api/cuentas
-        // Solo Admin o Gestor pueden abrir cuentas (RF-B1)
         [HttpPost]
         [Authorize(Roles = "Administrador,Gestor")]
         public async Task<ActionResult<CuentaDto>> AbrirCuenta([FromBody] AbrirCuentaRequest request)
@@ -41,7 +42,6 @@ namespace UIABank.API.Controllers
         }
 
         // GET: api/cuentas/por-cliente/{clienteId}
-        // Admin / Gestor consultan por cliente (RF-B2)
         [HttpGet("por-cliente/{clienteId:guid}")]
         [Authorize(Roles = "Administrador,Gestor")]
         public async Task<ActionResult<IReadOnlyList<CuentaDto>>> ObtenerPorCliente(Guid clienteId)
@@ -51,7 +51,6 @@ namespace UIABank.API.Controllers
         }
 
         // GET: api/cuentas?clienteId=...&tipo=...&moneda=...&estado=...
-        // Filtros para admin/gestor (RF-B2)
         [HttpGet]
         [Authorize(Roles = "Administrador,Gestor")]
         public async Task<ActionResult<IReadOnlyList<CuentaDto>>> Buscar(

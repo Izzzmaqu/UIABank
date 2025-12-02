@@ -4,10 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using UIABank.BC.Modelos;
 using UIABank.BW.Interfaces.DA;
 using UIABank.DA.Config;
@@ -22,8 +18,6 @@ namespace UIABank.DA.Acciones
         {
             _context = context;
         }
-
-        // === Implementación de IPagoServicioRepository ===
 
         public async Task<PagoServicio> CrearAsync(PagoServicio pago)
         {
@@ -65,6 +59,31 @@ namespace UIABank.DA.Acciones
                 .ToListAsync();
         }
 
+        // ← NUEVO MÉTODO AQUÍ
+        public async Task<List<PagoServicio>> ObtenerTodosAsync(
+            DateTime? desde,
+            DateTime? hasta,
+            bool soloProgramados)
+        {
+            var query = _context.PagosServicios
+                .Include(p => p.Cliente)
+                .Include(p => p.ProveedorServicio)
+                .AsQueryable();
+
+            if (desde.HasValue)
+                query = query.Where(p => p.FechaCreacion >= desde.Value);
+
+            if (hasta.HasValue)
+                query = query.Where(p => p.FechaCreacion <= hasta.Value);
+
+            if (soloProgramados)
+                query = query.Where(p => p.Estado == EstadoPagoServicio.Programado);
+
+            return await query
+                .OrderByDescending(p => p.FechaCreacion)
+                .ToListAsync();
+        }
+
         public async Task ActualizarAsync(PagoServicio pago)
         {
             _context.PagosServicios.Update(pago);
@@ -78,6 +97,5 @@ namespace UIABank.DA.Acciones
                             p.FechaEjecucion <= hasta)
                 .ToListAsync();
         }
+    }
 }
-}
-
